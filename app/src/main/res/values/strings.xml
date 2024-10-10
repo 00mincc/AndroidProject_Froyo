@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Froyo</string>
+    <string name="gotonextpage">다음 페이지로 이동</string>
+    <string name="popup">팝업 띄우기</string>
+    <string name="popupText">팝업 내용입니다</string>
+    <string name="Exit">닫기</string>
+    <string name="secondPage">두 번째 페이지</string>
+    <string name="beforePage">이전 페이지로</string>
 </resources>
