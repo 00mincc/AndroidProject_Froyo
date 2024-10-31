@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <!-- 상단에 이미지 두 개를 나란히 배치 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- 사용자가 업로드한 이미지 -->
+        <ImageView
+            android:id="@+id/userImageView"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:background="#E0E0E0"
+            android:contentDescription="@string/UserImgae" />
+
+        <!-- 서버에서 받아온 이미지 -->
+        <ImageView
+            android:id="@+id/serverImageView"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:background="#C0C0C0"
+            android:contentDescription="@string/ServerImage" />
+    </LinearLayout>
+
+    <!-- 하단에 타이머 표시 -->
+    <TextView
+        android:id="@+id/timerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:text="@string/_00_00" />
+</LinearLayout>
