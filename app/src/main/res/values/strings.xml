@@ -6,4 +6,11 @@
     <string name="Exit">닫기</string>
     <string name="secondPage">두 번째 페이지</string>
     <string name="beforePage">이전 페이지로</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="osim_" />
+    <string name="server_image_url" />
+    <string name="UserImgae">사용자 이미지</string>
+    <string name="ServerImage">서버 이미지</string>
+    <string name="_00_00">00:00</string>
 </resources>
