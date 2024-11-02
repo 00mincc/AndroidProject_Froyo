@@ -13,4 +13,19 @@
     <string name="UserImgae">사용자 이미지</string>
     <string name="ServerImage">서버 이미지</string>
     <string name="_00_00">00:00</string>
+    <string name="title_image">로고 이미지</string>
+    <string name="underline_text">사용하는 계정이 있어요\n</string>
+    <string name="register">회원가입</string>
+    <string name="nologin">로그인 없이 시작</string>
+    <string name="hasaccount">사용하는 계정이 있어요</string>
+    <string name="have_account">사용하는 계정이 있어요</string>
+    <string name="background_image_desc" />
+    <string name="make_question">문제 만들기</string>
+    <string name="question_list">문제 목록</string>
+    <string name="setting">설정</string>
+    <string name="upload">업로드</string>
+    <string name="UserImage">user_img</string>
+    <string name="user_image">user_img\n</string>
+    <string name="upload_img">이미지 업로드</string>
+    <string name="upload_image">이미지 업로드</string>
 </resources>

@@ -13,14 +13,11 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
-
-    private PopupManager popupManager;
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -45,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "이미지 업로드를 위해 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        // Android 11 이상에서 시스템 설정으로 이동
                         goToSettingsForManageStoragePermission();
                     }
                 }
@@ -57,16 +53,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        popupManager = new PopupManager(this);
-        Button showPopupButton = findViewById(R.id.showPopupButton);
-        showPopupButton.setOnClickListener(v -> popupManager.showPopup());
+        // 문제 만들기 버튼
+        Button createQuestionButton = findViewById(R.id.first_button);
+        createQuestionButton.setOnClickListener(v -> checkPermissionAndOpenImagePicker());
 
-        popupManager.setOnUploadClickListener(this::checkPermissionAndOpenImagePicker);
+        // 문제 목록 버튼
+        Button questionListButton = findViewById(R.id.second_button);
+        questionListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuestionListActivity.class);
+            startActivity(intent);
+        });
+
+        // 설정 버튼
+        Button settingsButton = findViewById(R.id.third_button);
+        settingsButton.setOnClickListener(v ->
+                Toast.makeText(MainActivity.this, "사용 불가", Toast.LENGTH_SHORT).show());
     }
 
     private void checkPermissionAndOpenImagePicker() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Android 11 이상에서 MANAGE_EXTERNAL_STORAGE 권한 확인
             if (Environment.isExternalStorageManager()) {
                 openImagePicker();
             } else {

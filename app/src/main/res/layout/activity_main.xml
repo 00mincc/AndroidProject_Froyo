@@ -1,32 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <!-- 첫 번째 페이지 이동 버튼 -->
+    <!-- 배경 이미지 설정 -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/mainimg"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/background_image_desc" />
+
+    <!-- 첫 번째 버튼 - 문제 만들기 -->
     <Button
-        android:id="@+id/NextPageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/gotonextpage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/first_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="350dp"
+        android:backgroundTint="#80FFFFFF"
+        android:text="@string/make_question"
+        android:textColor="#FF000000"
+        android:textSize="16sp" />
 
-    <!-- 팝업 띄우기 버튼 -->
+    <!-- 두 번째 버튼 - 문제 목록 -->
     <Button
-        android:id="@+id/showPopupButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/popup"
-        app:layout_constraintTop_toBottomOf="@id/NextPageButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/second_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="450dp"
+        android:backgroundTint="#80FFFFFF"
+        android:text="@string/question_list"
+        android:textColor="#FF000000"
+        android:textSize="16sp" />
 
-    <!-- 팝업 UI와 dim 처리 -->
+    <!-- 세 번째 버튼 - 설정 -->
+    <Button
+        android:id="@+id/third_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="550dp"
+        android:backgroundTint="#80FFFFFF"
+        android:text="@string/setting"
+        android:textColor="#FF000000"
+        android:textSize="16sp" />
+
+    <!-- 팝업 배경 오버레이 -->
     <RelativeLayout
         android:id="@+id/dimOverlay"
         android:layout_width="match_parent"
@@ -34,34 +54,15 @@
         android:background="#80000000"
         android:visibility="gone">
 
-        <LinearLayout
-            android:id="@+id/popupContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/popup_background"
-            android:orientation="vertical"
-            android:layout_centerInParent="true">
+    <!-- 팝업 안의 업로드 버튼 -->
+    <Button
+        android:id="@+id/uploadButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/upload"
+        android:layout_centerInParent="true"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#000000" />
+</RelativeLayout>
 
-            <!-- 팝업 텍스트 -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/popupText" />
-
-            <!-- 업로드 버튼 -->
-            <Button
-                android:id="@+id/uploadButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="이미지 업로드" />
-
-            <!-- 팝업 닫기 버튼 -->
-            <Button
-                android:id="@+id/closePopupButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Exit"
-                android:onClick="closePopupButtonClick" /> <!-- 닫기 버튼 이벤트 -->
-        </LinearLayout>
-    </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
