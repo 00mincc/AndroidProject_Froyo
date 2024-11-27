@@ -1,14 +1,14 @@
 package com.example.froyo;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
 public class PopupManager {
 
     private final Activity activity;
-    private OnUploadClickListener uploadClickListener;
+    private View popupView;
 
     public PopupManager(Activity activity) {
         this.activity = activity;
@@ -16,35 +16,25 @@ public class PopupManager {
 
     // 팝업 UI를 띄우는 메서드
     public void showPopup() {
-        RelativeLayout dimOverlay = activity.findViewById(R.id.dimOverlay);
-        dimOverlay.setVisibility(View.VISIBLE);
+        if (popupView == null) {
+            // 팝업 레이아웃 inflate
+            popupView = LayoutInflater.from(activity).inflate(R.layout.settings_popup, null);
 
-        // 업로드 버튼 설정
-        Button uploadButton = dimOverlay.findViewById(R.id.uploadButton);
-        uploadButton.setOnClickListener(v -> {
-            if (uploadClickListener != null) {
-                uploadClickListener.onUploadClick(); // 클릭 시 리스너 호출
-            }
-            closePopup(); // 팝업 닫기
-        });
+            // 팝업 추가
+            activity.addContentView(popupView, new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        }
 
-        // dim 영역을 클릭하면 팝업을 닫습니다.
-        dimOverlay.setOnClickListener(v -> closePopup());
+        popupView.setVisibility(View.VISIBLE);
+
+        // 닫기 버튼 처리 (팝업 외부를 터치해도 닫히지 않도록 설정)
+        popupView.setOnClickListener(null);
     }
 
     // 팝업 창을 닫는 메서드
     public void closePopup() {
-        RelativeLayout dimOverlay = activity.findViewById(R.id.dimOverlay);
-        dimOverlay.setVisibility(View.GONE);
-    }
-
-    // 업로드 클릭 리스너 설정 메서드
-    public void setOnUploadClickListener(OnUploadClickListener listener) {
-        this.uploadClickListener = listener;
-    }
-
-    // 인터페이스 정의
-    public interface OnUploadClickListener {
-        void onUploadClick();
+        if (popupView != null) {
+            popupView.setVisibility(View.GONE);
+        }
     }
 }

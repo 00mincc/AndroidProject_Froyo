@@ -17,17 +17,17 @@
     <!-- 흰색 배경 영역 -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="530dp"
         android:layout_margin="10dp"
         android:background="#FFFFFFFF" />
 
     <!-- 상단 사용자 업로드 이미지 -->
     <ImageView
         android:id="@+id/userImageView"
-        android:layout_width="302dp"
-        android:layout_height="195dp"
+        android:layout_width="370dp"
+        android:layout_height="250dp"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:scaleType="fitXY"
         android:background="#E0E0E0"
         android:contentDescription="@string/UserImage" />
@@ -35,23 +35,92 @@
     <!-- 하단 서버 이미지 -->
     <ImageView
         android:id="@+id/serverImageView"
-        android:layout_width="302dp"
-        android:layout_height="195dp"
+        android:layout_width="370dp"
+        android:layout_height="250dp"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="265dp"
+        android:layout_marginTop="280dp"
         android:scaleType="fitXY"
         android:background="#C0C0C0"
         android:contentDescription="@string/ServerImage" />
 
-    <!-- 하단 ProgressBar 타이머 -->
-    <ProgressBar
-        android:id="@+id/timerProgressBar"
+    <!-- 타이머 블록을 가로로 배치 -->
+    <LinearLayout
+        android:id="@+id/timerBlockContainer"
         android:layout_width="match_parent"
         android:layout_height="28dp"
         android:layout_gravity="bottom"
-        android:background="@android:color/transparent"
-        android:progressDrawable="@drawable/progress_bar_bg"
-        android:max="100"
-        android:progress="100" />
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
 
+        <!-- 각 블록을 View로 생성, 초기 배경색 설정 -->
+        <View
+            android:id="@+id/block1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block7"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block8"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block9"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+
+        <View
+            android:id="@+id/block10"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#CCCCCC" />
+    </LinearLayout>
 </FrameLayout>

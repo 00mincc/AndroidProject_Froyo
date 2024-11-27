@@ -5,7 +5,8 @@
 
     <!-- 배경색 -->
 
-    <!-- 이미지 영역 -->
+    <!-- 중앙 이미지 -->
+
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,51 +14,24 @@
 
     <ImageView
         android:id="@+id/center_image"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="80dp"
-        android:src="@drawable/title"
+        android:layout_marginTop="120dp"
         android:contentDescription="@string/title_image"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        android:src="@drawable/title" />
 
-    <Button
-        android:id="@+id/first_button"
-        android:layout_width="165dp"
-        android:layout_height="62dp"
-        android:layout_gravity="bottom|start"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="150dp"
-        android:backgroundTint="#FFFFA5A5"
-        android:strokeWidth="@integer/material_motion_duration_long_2"
-        android:strokeColor="#FFFFA5A5"
-        android:text="@string/nologin"
-        android:textColor="#FFFFFFFF"
-        android:textSize="16sp" />
-
-    <Button
-        android:id="@+id/second_button"
-        android:layout_width="164dp"
-        android:layout_height="59dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="150dp"
-        android:backgroundTint="#FF6EE8CF"
-        android:text="@string/register"
-        android:textColor="#FFFFFFFF"
-        android:textSize="16sp" />
-
-    <!-- 하단 구분선 -->
-    <Button
-        android:id="@+id/third_button"
-        android:layout_width="213dp"
-        android:layout_height="wrap_content"
+    <!-- 하나의 이미지 버튼으로 통합 -->
+    <ImageButton
+        android:id="@+id/start_button"
+        android:layout_width="249dp"
+        android:layout_height="61dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="110dp"
         android:background="@android:color/transparent"
-        android:text="@string/have_account"
-        android:textColor="#000000"
-        android:textSize="12sp" />
-
+        android:contentDescription="@string/button_description"
+        android:scaleType="fitXY"
+        android:src="@drawable/button_img" />
 
 </FrameLayout>

@@ -1,99 +1,124 @@
 package com.example.froyo;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
-import android.widget.Button;
+import android.os.Vibrator;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Uri selectedImageUri = result.getData().getData();
-                    if (selectedImageUri != null) {
-                        Intent intent = new Intent(MainActivity.this, UploadActivity.class);
-                        intent.putExtra("userImageUri", selectedImageUri.toString());
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(this, "이미지를 선택하지 못했습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-    );
-
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    openImagePicker();
-                } else {
-                    Toast.makeText(this, "이미지 업로드를 위해 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        goToSettingsForManageStoragePermission();
-                    }
-                }
-            }
-    );
+    private PopupWindow popupWindow;
+    private SharedPreferences sharedPreferences;
+    private MediaPlayer mediaPlayer;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 문제 만들기 버튼
-        Button createQuestionButton = findViewById(R.id.first_button);
-        createQuestionButton.setOnClickListener(v -> checkPermissionAndOpenImagePicker());
+        // 기존 SharedPreferences 초기화
+        sharedPreferences = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
 
-        // 문제 목록 버튼
-        Button questionListButton = findViewById(R.id.second_button);
-        questionListButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, QuestionListActivity.class);
-            startActivity(intent);
+        // MediaPlayer 초기화 (소리 효과용)
+        //mediaPlayer = MediaPlayer.create(this, R.raw.sample_sound); // sample_sound는 raw 폴더에 추가된 파일
+
+        // Vibrator 초기화
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // 기존 버튼 동작 유지
+        findViewById(R.id.settings_button).setOnClickListener(v -> showSettingsPopup());
+        findViewById(R.id.add_button).setOnClickListener(v -> {
+            // 기존 + 버튼 동작 (새로운 액티비티 실행 등)
+            Toast.makeText(this, "+ 버튼 클릭됨", Toast.LENGTH_SHORT).show();
         });
-
-        // 설정 버튼
-        Button settingsButton = findViewById(R.id.third_button);
-        settingsButton.setOnClickListener(v ->
-                Toast.makeText(MainActivity.this, "사용 불가", Toast.LENGTH_SHORT).show());
+        findViewById(R.id.folder_button).setOnClickListener(v -> {
+            // 기존 폴더 버튼 동작
+            Toast.makeText(this, "폴더 버튼 클릭됨", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void checkPermissionAndOpenImagePicker() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) {
-                openImagePicker();
-            } else {
-                goToSettingsForManageStoragePermission();
-            }
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            openImagePicker();
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+    // 기존 기능 유지: 팝업 UI 표시
+    private void showSettingsPopup() {
+        View settingsView = LayoutInflater.from(this).inflate(R.layout.settings_popup, null);
+
+        popupWindow = new PopupWindow(settingsView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setFocusable(true);
+        popupWindow.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
+
+        // 기존 소리 설정
+        Switch soundSwitch = settingsView.findViewById(R.id.sound_switch);
+        soundSwitch.setChecked(sharedPreferences.getBoolean("sound_enabled", true));
+        soundSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("sound_enabled", isChecked).apply();
+            Toast.makeText(this, isChecked ? "소리 켜짐" : "소리 꺼짐", Toast.LENGTH_SHORT).show();
+            if (isChecked) playSound();
+        });
+
+        // 기존 진동 설정
+        Switch vibrationSwitch = settingsView.findViewById(R.id.vibration_switch);
+        vibrationSwitch.setChecked(sharedPreferences.getBoolean("vibration_enabled", true));
+        vibrationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("vibration_enabled", isChecked).apply();
+            Toast.makeText(this, isChecked ? "진동 켜짐" : "진동 꺼짐", Toast.LENGTH_SHORT).show();
+            if (isChecked) triggerVibration();
+        });
+
+        // 기존 알림 설정
+        Switch notificationSwitch = settingsView.findViewById(R.id.notification_switch);
+        notificationSwitch.setChecked(sharedPreferences.getBoolean("notifications_enabled", true));
+        notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("notifications_enabled", isChecked).apply();
+            Toast.makeText(this, isChecked ? "알림 켜짐" : "알림 꺼짐", Toast.LENGTH_SHORT).show();
+        });
+
+        // 기존 약관 및 데이터 삭제 버튼 유지
+        TextView termsTextView = settingsView.findViewById(R.id.terms_text);
+        termsTextView.setOnClickListener(v -> {
+            Toast.makeText(this, "약관 보기 클릭됨", Toast.LENGTH_SHORT).show();
+        });
+        settingsView.findViewById(R.id.delete_data_button).setOnClickListener(v -> {
+            Toast.makeText(this, "데이터 삭제 버튼 클릭됨", Toast.LENGTH_SHORT).show();
+        });
+
+        // dim 영역 닫기 설정 유지
+        settingsView.setOnTouchListener((v, event) -> {
+            popupWindow.dismiss();
+            return true;
+        });
+    }
+
+    private void playSound() {
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    private void goToSettingsForManageStoragePermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                Uri.parse("package:" + getPackageName()));
-        startActivity(intent);
+    private void triggerVibration() {
+        if (vibrator != null && vibrator.hasVibrator()) {
+            vibrator.vibrate(500); // 500ms 진동
+        }
     }
 
-    private void openImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        imagePickerLauncher.launch(intent);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (popupWindow != null && popupWindow.isShowing()) {
+            popupWindow.dismiss();
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
     }
 }

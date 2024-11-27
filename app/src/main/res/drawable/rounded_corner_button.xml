@@ -1,0 +1,4 @@
+<!-- rounded_corner_button.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="16dp"/> <!-- 모서리 둥근 정도 설정 -->
+</shape>

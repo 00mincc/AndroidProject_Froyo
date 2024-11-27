@@ -1,13 +1,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape>
-            <solid android:color="#FF0900FF" />
+            <solid android:color="#FF0900FF" /> <!-- ProgressBar의 배경 색상 -->
         </shape>
     </item>
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid android:color="#FFFF0000" />
+                <solid android:color="#FFFF0000" /> <!-- ProgressBar의 진행 색상 -->
             </shape>
         </clip>
     </item>

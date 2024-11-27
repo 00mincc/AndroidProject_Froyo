@@ -28,4 +28,5 @@
     <string name="user_image">user_img\n</string>
     <string name="upload_img">이미지 업로드</string>
     <string name="upload_image">이미지 업로드</string>
+    <string name="button_description">button_1</string>
 </resources>
