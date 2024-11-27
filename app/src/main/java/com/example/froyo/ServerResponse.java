@@ -1,15 +1,20 @@
 package com.example.froyo;
 
 public class ServerResponse {
-    private String status;
-    private String transformed_image;
+    private String src; // 원본 이미지
+    private String dst; // 변환 이미지
+    private String pst; // 정답 좌표
 
-    public String getStatus() {
-        return status;
+    public String getSrc() {
+        return src;
     }
 
-    public String getTransformedImage() {
-        return transformed_image;
+    public String getDst() {
+        return dst;
+    }
+
+    public String getPst() {
+        return pst;
     }
 }
 

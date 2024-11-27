@@ -1,6 +1,7 @@
 package com.example.froyo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -28,28 +29,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 기존 SharedPreferences 초기화
+        // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
-
-        // MediaPlayer 초기화 (소리 효과용)
-        //mediaPlayer = MediaPlayer.create(this, R.raw.sample_sound); // sample_sound는 raw 폴더에 추가된 파일
 
         // Vibrator 초기화
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        // 기존 버튼 동작 유지
+        // settings_button 클릭 이벤트
         findViewById(R.id.settings_button).setOnClickListener(v -> showSettingsPopup());
+
+        // add_button 클릭 이벤트
         findViewById(R.id.add_button).setOnClickListener(v -> {
-            // 기존 + 버튼 동작 (새로운 액티비티 실행 등)
-            Toast.makeText(this, "+ 버튼 클릭됨", Toast.LENGTH_SHORT).show();
+            // UploadActivity로 이동
+            Intent intent = new Intent(MainActivity.this, UploadActivity.class);
+            startActivity(intent);
         });
+
+        // folder_button 클릭 이벤트
         findViewById(R.id.folder_button).setOnClickListener(v -> {
-            // 기존 폴더 버튼 동작
             Toast.makeText(this, "폴더 버튼 클릭됨", Toast.LENGTH_SHORT).show();
         });
     }
 
-    // 기존 기능 유지: 팝업 UI 표시
     private void showSettingsPopup() {
         View settingsView = LayoutInflater.from(this).inflate(R.layout.settings_popup, null);
 
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         popupWindow.setFocusable(true);
         popupWindow.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER, 0, 0);
 
-        // 기존 소리 설정
+        // 소리 설정
         Switch soundSwitch = settingsView.findViewById(R.id.sound_switch);
         soundSwitch.setChecked(sharedPreferences.getBoolean("sound_enabled", true));
         soundSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             if (isChecked) playSound();
         });
 
-        // 기존 진동 설정
+        // 진동 설정
         Switch vibrationSwitch = settingsView.findViewById(R.id.vibration_switch);
         vibrationSwitch.setChecked(sharedPreferences.getBoolean("vibration_enabled", true));
         vibrationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             if (isChecked) triggerVibration();
         });
 
-        // 기존 알림 설정
+        // 알림 설정
         Switch notificationSwitch = settingsView.findViewById(R.id.notification_switch);
         notificationSwitch.setChecked(sharedPreferences.getBoolean("notifications_enabled", true));
         notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -83,16 +84,12 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, isChecked ? "알림 켜짐" : "알림 꺼짐", Toast.LENGTH_SHORT).show();
         });
 
-        // 기존 약관 및 데이터 삭제 버튼 유지
+        // 약관 보기 및 데이터 삭제
         TextView termsTextView = settingsView.findViewById(R.id.terms_text);
-        termsTextView.setOnClickListener(v -> {
-            Toast.makeText(this, "약관 보기 클릭됨", Toast.LENGTH_SHORT).show();
-        });
-        settingsView.findViewById(R.id.delete_data_button).setOnClickListener(v -> {
-            Toast.makeText(this, "데이터 삭제 버튼 클릭됨", Toast.LENGTH_SHORT).show();
-        });
+        termsTextView.setOnClickListener(v -> Toast.makeText(this, "약관 보기 클릭됨", Toast.LENGTH_SHORT).show());
+        settingsView.findViewById(R.id.delete_data_button).setOnClickListener(v -> Toast.makeText(this, "데이터 삭제 버튼 클릭됨", Toast.LENGTH_SHORT).show());
 
-        // dim 영역 닫기 설정 유지
+        // 팝업 외부 클릭 시 닫기
         settingsView.setOnTouchListener((v, event) -> {
             popupWindow.dismiss();
             return true;

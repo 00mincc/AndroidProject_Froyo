@@ -122,8 +122,23 @@ public class UploadActivity extends AppCompatActivity {
             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ServerResponse serverResponse = response.body();
-                    Log.i(TAG, "이미지 생성 성공: " + serverResponse.getTransformedImage());
-                    Toast.makeText(UploadActivity.this, "이미지 생성 성공!", Toast.LENGTH_SHORT).show();
+
+                    // 서버로부터 받은 데이터
+                    String srcBase64 = serverResponse.getSrc();
+                    String dstBase64 = serverResponse.getDst();
+                    String pstCoordinates = serverResponse.getPst();
+
+                    Log.i(TAG, "이미지 생성 성공: src=" + srcBase64 + ", dst=" + dstBase64 + ", pst=" + pstCoordinates);
+
+                    // AppData에 데이터 저장
+                    AppData appData = (AppData) getApplication();
+                    appData.setSrcBase64(srcBase64);
+                    appData.setDstBase64(dstBase64);
+                    appData.setPstCoordinates(pstCoordinates);
+
+                    // ComparisonActivity로 이동
+                    Intent intent = new Intent(UploadActivity.this, ComparisonActivity.class);
+                    startActivity(intent);
                 } else {
                     try {
                         String errorBody = response.errorBody().string();
@@ -142,6 +157,7 @@ public class UploadActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private String encodeImageToBase64(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
