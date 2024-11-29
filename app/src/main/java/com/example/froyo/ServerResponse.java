@@ -1,9 +1,18 @@
 package com.example.froyo;
 
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
+
 public class ServerResponse {
-    private String src; // 원본 이미지
-    private String dst; // 변환 이미지
-    private String pst; // 정답 좌표
+
+    @SerializedName("src")
+    private String src;
+
+    @SerializedName("dst")
+    private String dst;
+
+    @SerializedName("pts")
+    private List<List<Integer>> pts;
 
     public String getSrc() {
         return src;
@@ -13,8 +22,17 @@ public class ServerResponse {
         return dst;
     }
 
-    public String getPst() {
-        return pst;
+    public List<List<Integer>> getPts() {
+        return pts;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerResponse{" +
+                "src='" + src + '\'' +
+                ", dst='" + dst + '\'' +
+                ", pts=" + pts +
+                '}';
     }
 }
 

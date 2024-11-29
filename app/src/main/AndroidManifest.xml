@@ -33,9 +33,19 @@
     </activity>
 
     <activity android:name=".MainActivity" />
-    <activity android:name=".UploadActivity" />
+    <activity android:name=".UploadActivity"
+              android:launchMode="singleTask" />
+
     <activity android:name=".ComparisonActivity" />
-    <activity android:name=".QuestionListActivity" />
+
+    <activity android:name=".QuestionListActivity"
+              android:launchMode="singleTask" />
+
+    <activity android:name=".SettingActivity"
+              android:launchMode="singleTask"/>
+
+    <activity android:name=".FolderActivity"
+              android:launchMode="singleTask" />
 
 </application>
     </manifest>

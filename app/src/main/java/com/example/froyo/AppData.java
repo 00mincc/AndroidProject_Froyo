@@ -2,10 +2,12 @@ package com.example.froyo;
 
 import android.app.Application;
 
+import java.util.List;
+
 public class AppData extends Application {
     private String srcBase64;
     private String dstBase64;
-    private String pstCoordinates;
+    private List<List<Integer>> ptsCoordinates;
 
     public String getSrcBase64() {
         return srcBase64;
@@ -23,11 +25,11 @@ public class AppData extends Application {
         this.dstBase64 = dstBase64;
     }
 
-    public String getPstCoordinates() {
-        return pstCoordinates;
+    public List<List<Integer>> getPtsCoordinates() {
+        return ptsCoordinates;
     }
 
-    public void setPstCoordinates(String pstCoordinates) {
-        this.pstCoordinates = pstCoordinates;
+    public void setPtsCoordinates(List<List<Integer>> ptsCoordinates) {
+        this.ptsCoordinates = ptsCoordinates;
     }
 }

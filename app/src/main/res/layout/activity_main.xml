@@ -3,28 +3,69 @@
     android:layout_height="match_parent">
 
     <!-- 배경 이미지 설정 -->
+
+    <!-- 상단 로고 -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/mainimg"
+        android:contentDescription="@string/background_image_desc"
         android:scaleType="centerCrop"
-        android:contentDescription="@string/background_image_desc" />
+        android:src="#FFFFFF" />
+
+    <ImageView
+        android:id="@+id/froyo_logo"
+        android:layout_width="330dp"
+        android:layout_height="42dp"
+        android:layout_gravity="top|center_horizontal"
+        android:contentDescription="상단로고"
+        android:scaleType="fitCenter"
+        android:src="@drawable/froyo_logo" />
+
+    <!-- 중앙 첫 번째 이미지 -->
+    <ImageView
+        android:id="@+id/main_center_image"
+        android:layout_width="380dp"
+        android:layout_height="380dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="90dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/main_center_img"
+        android:contentDescription="중앙 이미지" />
+
+    <!-- 중간 두 번째 이미지 -->
+    <ImageView
+        android:id="@+id/main_middle_image"
+        android:layout_width="320dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="500dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/main_middle_img"
+        android:contentDescription="중간 이미지" />
+
+    <!-- 선 추가 (C0C0C0 컬러) -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:background="#C0C0C0"
+        android:layout_marginBottom="50dp" />
 
     <!-- 흰색 배경 박스 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="50dp"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
+        android:background="#FAFAFA"
         android:elevation="4dp"
         android:gravity="center">
 
         <!-- 왼쪽 폴더 버튼 -->
         <ImageButton
             android:id="@+id/folder_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
             android:background="@drawable/folder"
@@ -34,8 +75,8 @@
         <!-- 중앙 + 버튼 -->
         <ImageButton
             android:id="@+id/add_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
             android:background="@drawable/add_btn"
@@ -45,14 +86,13 @@
         <!-- 오른쪽 톱니바퀴 버튼 -->
         <ImageButton
             android:id="@+id/settings_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
             android:background="@drawable/settings"
             android:scaleType="centerInside"
             android:contentDescription="@string/setting" />
-
-
     </LinearLayout>
+
 </FrameLayout>
