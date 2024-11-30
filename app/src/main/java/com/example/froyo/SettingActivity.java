@@ -80,18 +80,11 @@ public class SettingActivity extends AppCompatActivity {
             });
         });
 
-        // 하단 네비게이션 바의 버튼 동작 복구
-        findViewById(R.id.add_button).setOnClickListener(v -> {
-            Intent intent = new Intent(SettingActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
-        });
 
         findViewById(R.id.folder_button).setOnClickListener(v -> {
             Intent intent = new Intent(SettingActivity.this, FolderActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
         });
 
         // add_button 화면 전환 시 오른쪽 이동 애니메이션 추가

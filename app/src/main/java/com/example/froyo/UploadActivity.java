@@ -10,7 +10,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -34,7 +34,8 @@ public class UploadActivity extends AppCompatActivity {
     private static final String TAG = "UploadActivity";
     private Uri userImageUri;
     private PhotoView userImageView;
-    private Button uploadButton;
+    private ImageButton uploadButton;
+    private FrameLayout loadingOverlay;
 
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -63,6 +64,8 @@ public class UploadActivity extends AppCompatActivity {
 
         userImageView = findViewById(R.id.userImageView);
         uploadButton = findViewById(R.id.uploadButton);
+        ImageButton deleteButton = findViewById(R.id.deleteButton);
+        loadingOverlay = findViewById(R.id.loading_overlay);
 
         setupNavigationBar();
 
@@ -84,22 +87,37 @@ public class UploadActivity extends AppCompatActivity {
             }
         });
 
+        // 업로드 버튼 클릭 이벤트
         uploadButton.setOnClickListener(v -> {
             if (userImageUri != null) {
                 try {
+                    // 로딩 오버레이 활성화
+                    showLoadingOverlay();
+
                     InputStream inputStream = getContentResolver().openInputStream(userImageUri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    sendImageToServer(bitmap, "qwerty61441@gmail.com", "ADMIN");
+
+                    sendImageToServer(bitmap, "qwerty61441@gmail.com", "ADMIN", () -> {
+                        // 로딩 오버레이 비활성화
+                        hideLoadingOverlay();
+                    });
+
                 } catch (Exception e) {
                     Log.e(TAG, "이미지 처리 실패", e);
                     Toast.makeText(this, "이미지 처리에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    hideLoadingOverlay();
                 }
             } else {
                 Toast.makeText(this, "이미지를 먼저 선택해 주세요.", Toast.LENGTH_SHORT).show();
             }
         });
 
-
+        // 삭제 버튼 클릭 이벤트
+        deleteButton.setOnClickListener(v -> {
+            userImageUri = null;
+            userImageView.setImageResource(android.R.color.transparent);
+            Toast.makeText(this, "이미지가 초기화되었습니다.", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void openGallery() {
@@ -111,34 +129,43 @@ public class UploadActivity extends AppCompatActivity {
     private void setupNavigationBar() {
         // Folder 버튼 클릭
         findViewById(R.id.folder_button).setOnClickListener(v -> {
+            if (isLoadingOverlayVisible()) return; // 로딩 중에는 비활성화
             Intent intent = new Intent(UploadActivity.this, FolderActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right); // 오른쪽으로 이동
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
         });
 
-        // Add 버튼 클릭: MainActivity로 이동
+        // Add 버튼 클릭
         findViewById(R.id.add_button).setOnClickListener(v -> {
+            if (isLoadingOverlayVisible()) return; // 로딩 중에는 비활성화
             Intent intent = new Intent(UploadActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP); // 기존 MainActivity 재사용
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         });
 
         // Settings 버튼 클릭
         findViewById(R.id.settings_button).setOnClickListener(v -> {
+            if (isLoadingOverlayVisible()) return; // 로딩 중에는 비활성화
             Intent intent = new Intent(UploadActivity.this, SettingActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left); // 왼쪽으로 이동
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         });
     }
 
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right); // 오른쪽으로 이동
+    private void showLoadingOverlay() {
+        loadingOverlay.setVisibility(View.VISIBLE);
+        loadingOverlay.bringToFront(); // 로딩 오버레이를 최상단으로 설정
     }
 
-    private void sendImageToServer(Bitmap bitmap, String email, String nickname) {
+    private void hideLoadingOverlay() {
+        loadingOverlay.setVisibility(View.GONE);
+    }
+
+    private boolean isLoadingOverlayVisible() {
+        return loadingOverlay.getVisibility() == View.VISIBLE;
+    }
+
+    private void sendImageToServer(Bitmap bitmap, String email, String nickname, Runnable onComplete) {
         String imageBase64 = encodeImageToBase64(bitmap);
 
         GenerateImageRequest request = new GenerateImageRequest(email, nickname, imageBase64);
@@ -162,9 +189,7 @@ public class UploadActivity extends AppCompatActivity {
                         AppData appData = (AppData) getApplication();
                         appData.setSrcBase64(srcBase64);
                         appData.setDstBase64(dstBase64);
-                        appData.setPtsCoordinates(pts); // AppData에 pts 저장
-
-                        Log.i(TAG, "pts 데이터 저장 완료: " + pts);
+                        appData.setPtsCoordinates(pts);
                     } else {
                         Log.e(TAG, "getApplication()이 AppData의 인스턴스가 아닙니다.");
                         Toast.makeText(UploadActivity.this, "데이터 저장 실패", Toast.LENGTH_SHORT).show();
@@ -181,12 +206,14 @@ public class UploadActivity extends AppCompatActivity {
                         Log.e(TAG, "서버 오류 본문 읽기 실패", e);
                     }
                 }
+                onComplete.run();
             }
 
             @Override
             public void onFailure(Call<ServerResponse> call, Throwable t) {
                 Log.e(TAG, "통신 실패", t);
                 Toast.makeText(UploadActivity.this, "통신 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                onComplete.run();
             }
         });
     }
@@ -196,5 +223,12 @@ public class UploadActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         byte[] imageBytes = outputStream.toByteArray();
         return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isLoadingOverlayVisible()) return; // 로딩 중에는 뒤로가기 비활성화
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
     }
 }

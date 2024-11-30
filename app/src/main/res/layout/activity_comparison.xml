@@ -12,7 +12,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F2856D" />
+        android:background="#FFFFFF" />
 
     <!-- 흰색 배경 영역 -->
     <View

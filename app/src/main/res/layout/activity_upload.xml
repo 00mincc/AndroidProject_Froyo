@@ -2,7 +2,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 배경 이미지 -->
+
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +20,6 @@
         android:scaleType="fitCenter"
         android:src="@drawable/froyo_logo" />
 
-    <!-- 이미지 및 업로드 버튼 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,17 +37,27 @@
             android:clickable="true"
             android:focusable="true" />
 
-        <Button
+        <!-- 업로드 버튼 -->
+        <ImageButton
             android:id="@+id/uploadButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#E0E0E0"
-            android:text="@string/upload_image"
-            android:textColor="#FF000000"
-            android:textSize="16sp" />
+            android:layout_width="200dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="0dp"
+            android:background="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/upload_button" />
+
+        <!-- 삭제 버튼 -->
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="200dp"
+            android:layout_height="64dp"
+            android:background="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/delete_button" />
     </LinearLayout>
 
-    <!-- 선 추가 (C0C0C0 컬러) -->
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -55,7 +65,6 @@
         android:background="#C0C0C0"
         android:layout_marginBottom="50dp" />
 
-    <!-- 하단 네비게이션 바 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -65,7 +74,6 @@
         android:elevation="4dp"
         android:gravity="center">
 
-        <!-- 왼쪽 폴더 버튼 -->
         <ImageButton
             android:id="@+id/folder_button"
             android:layout_width="30dp"
@@ -76,7 +84,6 @@
             android:scaleType="centerInside"
             android:contentDescription="@string/question_list" />
 
-        <!-- 중앙 + 버튼 -->
         <ImageButton
             android:id="@+id/add_button"
             android:layout_width="30dp"
@@ -87,7 +94,6 @@
             android:scaleType="centerInside"
             android:contentDescription="@string/make_question" />
 
-        <!-- 오른쪽 톱니바퀴 버튼 -->
         <ImageButton
             android:id="@+id/settings_button"
             android:layout_width="30dp"
@@ -98,5 +104,43 @@
             android:scaleType="centerInside"
             android:contentDescription="@string/setting" />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- 로딩 ProgressBar -->
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+
+            <!-- 로딩 텍스트 -->
+            <TextView
+                android:id="@+id/loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="이미지 생성중..."
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:gravity="center" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+
 
 </FrameLayout>
