@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/account_email_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="현재 계정: example@gmail.com"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/nickname_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="새 닉네임 입력"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/change_nickname_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="닉네임 변경"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/change_account_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="계정 변경" />
+
+</LinearLayout>

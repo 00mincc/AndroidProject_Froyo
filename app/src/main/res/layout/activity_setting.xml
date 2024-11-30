@@ -92,6 +92,7 @@
 
             <!-- 계정 관리 버튼 -->
             <Button
+                android:id="@+id/management_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="계정 관리"
@@ -114,10 +115,10 @@
 
             <!-- 데이터 삭제 버튼 -->
             <Button
-                android:id="@+id/delete_data_button"
+                android:id="@+id/logoout_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="데이터 삭제"
+                android:text="로그아웃"
                 android:backgroundTint="#FF4444"
                 android:textColor="#FFFFFF"
                 android:elevation="4dp"
