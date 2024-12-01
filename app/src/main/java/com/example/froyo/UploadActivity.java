@@ -3,15 +3,19 @@ package com.example.froyo;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -19,7 +23,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -33,9 +36,11 @@ public class UploadActivity extends AppCompatActivity {
 
     private static final String TAG = "UploadActivity";
     private Uri userImageUri;
-    private PhotoView userImageView;
+    private ImageView userImageView;
     private ImageButton uploadButton;
     private FrameLayout loadingOverlay;
+    private Matrix matrix;
+    private ScaleGestureDetector scaleGestureDetector;
 
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -67,25 +72,29 @@ public class UploadActivity extends AppCompatActivity {
         ImageButton deleteButton = findViewById(R.id.deleteButton);
         loadingOverlay = findViewById(R.id.loading_overlay);
 
-        setupNavigationBar();
+        matrix = new Matrix();
+        userImageView.setImageMatrix(matrix);
 
-        userImageView.setOnTouchListener(new View.OnTouchListener() {
-            private long startTime;
-
+        // 확대/축소 제스처를 처리할 ScaleGestureDetector 설정
+        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    startTime = System.currentTimeMillis();
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    long clickDuration = System.currentTimeMillis() - startTime;
-                    if (clickDuration < 200) {
-                        openGallery();
-                        return true;
-                    }
-                }
-                return false;
+            public boolean onScale(ScaleGestureDetector detector) {
+                float scaleFactor = detector.getScaleFactor();
+                matrix.postScale(scaleFactor, scaleFactor, detector.getFocusX(), detector.getFocusY());
+                userImageView.setImageMatrix(matrix);
+                return true;
             }
         });
+
+        userImageView.setOnTouchListener((v, event) -> {
+            scaleGestureDetector.onTouchEvent(event);
+            return true;
+        });
+
+        setupNavigationBar();
+
+        // 삭제 버튼 클릭 시 갤러리 열기
+        deleteButton.setOnClickListener(v -> openGallery());
 
         // 업로드 버튼 클릭 이벤트
         uploadButton.setOnClickListener(v -> {
@@ -97,7 +106,10 @@ public class UploadActivity extends AppCompatActivity {
                     InputStream inputStream = getContentResolver().openInputStream(userImageUri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
-                    sendImageToServer(bitmap, "qwerty61441@gmail.com", "ADMIN", () -> {
+                    // 캡처된 이미지 처리
+                    Bitmap capturedBitmap = captureZoomedImage(bitmap);
+
+                    sendImageToServer(capturedBitmap, "qwerty61441@gmail.com", "ADMIN", () -> {
                         // 로딩 오버레이 비활성화
                         hideLoadingOverlay();
                     });
@@ -110,13 +122,6 @@ public class UploadActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "이미지를 먼저 선택해 주세요.", Toast.LENGTH_SHORT).show();
             }
-        });
-
-        // 삭제 버튼 클릭 이벤트
-        deleteButton.setOnClickListener(v -> {
-            userImageUri = null;
-            userImageView.setImageResource(android.R.color.transparent);
-            Toast.makeText(this, "이미지가 초기화되었습니다.", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -223,6 +228,15 @@ public class UploadActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         byte[] imageBytes = outputStream.toByteArray();
         return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
+
+    private Bitmap captureZoomedImage(Bitmap originalBitmap) {
+        // 이미지의 확대/축소 상태를 반영한 비트맵 캡처
+        Bitmap bitmap = Bitmap.createBitmap(originalBitmap);
+        userImageView.setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(userImageView.getDrawingCache());
+        userImageView.setDrawingCacheEnabled(false);
+        return bitmap;
     }
 
     @Override

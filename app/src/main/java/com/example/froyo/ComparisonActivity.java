@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -21,6 +20,8 @@ import java.util.List;
 public class ComparisonActivity extends AppCompatActivity {
 
     private static final String TAG = "ComparisonActivity";
+    private int correctAnswers = 0;  // 맞춘 정답 개수
+    private ParticleEffect particleEffect;  // ParticleEffect 객체 선언
     private List<List<Integer>> ptsCoordinates; // 서버에서 받아온 정답 좌표 리스트
     private Bitmap serverBitmap; // 변환 이미지
     private ImageView serverImageView; // 변환 이미지뷰
@@ -50,6 +51,11 @@ public class ComparisonActivity extends AppCompatActivity {
             // 서버 이미지를 MutableBitmap으로 설정
             mutableBitmap = serverBitmap.copy(Bitmap.Config.ARGB_8888, true);
             serverImageView.setImageBitmap(mutableBitmap);
+
+            Log.i(TAG, "이미지 크기: " + serverBitmap.getWidth() + "px x " + serverBitmap.getHeight() + "px, " +
+                    "변환된 크기: " + serverBitmap.getWidth() / getResources().getDisplayMetrics().density + "dp x " +
+                    serverBitmap.getHeight() / getResources().getDisplayMetrics().density + "dp");
+
         } else {
             Log.e(TAG, "변환 이미지를 디코딩할 수 없습니다.");
         }
@@ -60,6 +66,77 @@ public class ComparisonActivity extends AppCompatActivity {
         // 정답 확인 버튼 이벤트
         checkAnswersButton.setOnClickListener(v -> drawAllAnswers());
     }
+
+    /**
+     * 이미지에 원을 그리기
+     */
+    private void drawCircleOnAnswer(int x, int y) {
+        if (mutableBitmap == null) {
+            Log.e(TAG, "Bitmap이 null입니다. 원을 그릴 수 없습니다.");
+            return;
+        }
+
+        Canvas canvas = new Canvas(mutableBitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setStyle(Paint.Style.STROKE); // 내부 비우기
+        paint.setStrokeWidth(10); // 테두리 두께
+        paint.setAntiAlias(true);
+
+        // 원 크기 설정
+        int radius = 50;
+        canvas.drawCircle(x, y, radius, paint);
+
+        // 변경된 이미지를 ImageView에 다시 설정
+        serverImageView.setImageBitmap(mutableBitmap);
+    }
+
+    /**
+     * 모든 정답에 원을 그리기
+     */
+    private void drawAllAnswers() {
+        if (mutableBitmap == null) {
+            Log.e(TAG, "Bitmap이 null입니다. 정답을 그릴 수 없습니다.");
+            return;
+        }
+
+        // 기존에 그려진 모든 원을 지우고 새로 그리기
+        mutableBitmap = serverBitmap.copy(Bitmap.Config.ARGB_8888, true); // 비트맵 복사
+
+        Canvas canvas = new Canvas(mutableBitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);  // 색상 변경 가능
+        paint.setStyle(Paint.Style.STROKE); // 원의 내부를 비우기
+        paint.setStrokeWidth(10);  // 테두리 두께
+        paint.setAntiAlias(true);  // 가장자리 부드럽게
+
+        // 정답 좌표 출력 확인
+        Log.d(TAG, "정답 좌표 개수: " + ptsCoordinates.size());
+
+        // 정답 좌표를 기준으로 원 그리기
+        for (List<Integer> coordinates : ptsCoordinates) {
+            if (coordinates.size() == 2) {
+                float x1 = coordinates.get(0);
+                float y1 = coordinates.get(1);
+                int roundedX1 = Math.round(x1);
+                int roundedY1 = Math.round(y1);
+
+                // 좌표 로그
+                Log.d(TAG, "좌표: (" + roundedX1 + ", " + roundedY1 + ")");
+                // 원 그리기
+                canvas.drawCircle(roundedX1, roundedY1, 50, paint);
+            }
+        }
+
+        // 변경된 이미지를 ImageView에 다시 설정
+        serverImageView.setImageBitmap(mutableBitmap);
+
+        // Toast 메시지로 정답 표시 알림
+        Toast.makeText(this, "정답이 표시되었습니다.", Toast.LENGTH_SHORT).show();
+    }
+
+
+
 
     /**
      * 터치 이벤트 처리
@@ -110,133 +187,60 @@ public class ComparisonActivity extends AppCompatActivity {
         int bitmapWidth = mutableBitmap.getWidth();
         int bitmapHeight = mutableBitmap.getHeight();
 
-        // ImageView와 Bitmap의 비율 계산
-        float scaleX = (float) bitmapWidth / imageViewWidth;
-        float scaleY = (float) bitmapHeight / imageViewHeight;
+        // 이미지 비율을 고려한 계산 (실제 이미지 크기와 ImageView 크기의 비율)
+        float scaleX = (float) bitmapWidth / (float) imageViewWidth;
+        float scaleY = (float) bitmapHeight / (float) imageViewHeight;
 
-        // 실제 이미지 좌표 계산
+        // 터치 좌표를 비율에 맞게 변환
         imageCoordinates[0] = touchX * scaleX;
         imageCoordinates[1] = touchY * scaleY;
 
         return imageCoordinates;
     }
 
+
+
     /**
      * 정답 체크 로직
      */
     private boolean isCorrectAnswer(int x, int y) {
-        if (ptsCoordinates == null || ptsCoordinates.isEmpty()) {
-            Log.w(TAG, "정답 좌표가 없습니다.");
-            return false;
-        }
-
-        int tolerance = 20; // 허용 범위 (픽셀 단위로 설정)
-
         for (List<Integer> coordinates : ptsCoordinates) {
-            if (coordinates.size() == 4) {
-                int x1 = coordinates.get(0);
-                int y1 = coordinates.get(1);
-                int x2 = coordinates.get(2);
-                int y2 = coordinates.get(3);
+            int correctX = coordinates.get(0);
+            int correctY = coordinates.get(1);
 
-                // 터치 좌표가 허용 범위를 포함한 정답 영역 내에 있는지 확인
-                if (x >= x1 - tolerance && x <= x2 + tolerance &&
-                        y >= y1 - tolerance && y <= y2 + tolerance) {
-                    Log.i(TAG, "정답 좌표 확인: (" + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ") + 허용 범위: " + tolerance);
-                    return true;
-                }
+            // 좌표가 일정 범위 내에 있는지 확인
+            if (Math.abs(x - correctX) < 50 && Math.abs(y - correctY) < 50) {
+                return true;
             }
         }
         return false;
     }
 
-    /**
-     * 정답 영역에 빨간색 원을 그리기
-     */
-    private void drawCircleOnAnswer(int x, int y) {
-        if (mutableBitmap == null) {
-            Log.e(TAG, "Bitmap이 null입니다. 원을 그릴 수 없습니다.");
-            return;
-        }
 
-        Canvas canvas = new Canvas(mutableBitmap);
-        Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setStyle(Paint.Style.STROKE); // 내부 비우기
-        paint.setStrokeWidth(10); // 테두리 두께
-        paint.setAntiAlias(true);
 
-        // 원 크기 설정
-        int radius = 50;
-        canvas.drawCircle(x, y, radius, paint);
-
-        // 변경된 이미지를 ImageView에 다시 설정
-        serverImageView.setImageBitmap(mutableBitmap);
-    }
 
     /**
-     * 모든 정답을 표시
+     * 이미지를 Base64 문자열로부터 Bitmap으로 변환
      */
-    private void drawAllAnswers() {
-        if (mutableBitmap == null) {
-            Log.e(TAG, "Bitmap이 null입니다. 정답을 그릴 수 없습니다.");
-            return;
-        }
-
-        Canvas canvas = new Canvas(mutableBitmap);
-        Paint paint = new Paint();
-        paint.setColor(Color.BLUE);
-        paint.setStyle(Paint.Style.STROKE); // 내부 비우기
-        paint.setStrokeWidth(10); // 테두리 두께
-        paint.setAntiAlias(true);
-
-        for (List<Integer> coordinates : ptsCoordinates) {
-            if (coordinates.size() == 4) {
-                int x1 = coordinates.get(0);
-                int y1 = coordinates.get(1);
-                int x2 = coordinates.get(2);
-                int y2 = coordinates.get(3);
-
-                int centerX = (x1 + x2) / 2;
-                int centerY = (y1 + y2) / 2;
-                int radius = Math.min((x2 - x1) / 2, (y2 - y1) / 2);
-
-                canvas.drawCircle(centerX, centerY, radius, paint);
-            }
-        }
-
-        serverImageView.setImageBitmap(mutableBitmap);
-        Toast.makeText(this, "정답이 표시되었습니다.", Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Base64 문자열을 디코딩하여 ImageView에 표시
-     */
-    private void displayImage(ImageView imageView, String base64String, String imageType) {
-        if (base64String != null && !base64String.isEmpty()) {
-            Bitmap bitmap = decodeBase64ToBitmap(base64String);
-            if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
-            } else {
-                Log.e(TAG, imageType + " 이미지를 디코딩할 수 없습니다.");
-                Toast.makeText(this, imageType + " 이미지를 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Log.w(TAG, imageType + " 이미지 데이터가 없습니다.");
-            Toast.makeText(this, imageType + " 이미지 데이터가 제공되지 않았습니다.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Base64 문자열을 Bitmap으로 디코딩
-     */
-    private Bitmap decodeBase64ToBitmap(String base64String) {
+    private Bitmap decodeBase64ToBitmap(String base64Str) {
         try {
-            byte[] decodedBytes = Base64.decode(base64String, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Base64 디코딩 실패", e);
+            byte[] decodedString = Base64.decode(base64Str, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        } catch (Exception e) {
+            Log.e(TAG, "Base64 디코딩 오류", e);
             return null;
+        }
+    }
+
+    /**
+     * 이미지를 ImageView에 표시
+     */
+    private void displayImage(ImageView imageView, String base64Str, String label) {
+        Bitmap bitmap = decodeBase64ToBitmap(base64Str);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        } else {
+            Log.e(TAG, label + " 이미지 로드 실패");
         }
     }
 }

@@ -8,12 +8,6 @@
         android:layout_height="match_parent"
         android:background="#FFFFFFFF" />
 
-    <!-- 그라데이션 배경 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF" />
-
     <!-- 흰색 배경 영역 -->
     <View
         android:layout_width="match_parent"
@@ -24,22 +18,22 @@
     <!-- 상단 사용자 업로드 이미지 -->
     <ImageView
         android:id="@+id/userImageView"
-        android:layout_width="370dp"
-        android:layout_height="250dp"
+        android:layout_width="290dp"
+        android:layout_height="290dp"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="20dp"
-        android:scaleType="fitXY"
+        android:layout_marginTop="15dp"
+        android:scaleType="fitCenter"
         android:background="#E0E0E0"
         android:contentDescription="@string/UserImage" />
 
     <!-- 하단 서버 이미지 -->
     <ImageView
         android:id="@+id/serverImageView"
-        android:layout_width="370dp"
-        android:layout_height="250dp"
+        android:layout_width="290dp"
+        android:layout_height="290dp"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="280dp"
-        android:scaleType="fitXY"
+        android:layout_marginTop="310dp"
+        android:scaleType="fitCenter"
         android:background="#C0C0C0"
         android:contentDescription="@string/ServerImage" />
 
@@ -51,5 +45,14 @@
         android:text="정답 확인"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="20dp" />
+
+    <!-- ParticleEffect를 위한 오버레이 레이아웃 -->
+    <RelativeLayout
+        android:id="@+id/particleOverlayLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:background="@android:color/transparent"/>
 
 </FrameLayout>

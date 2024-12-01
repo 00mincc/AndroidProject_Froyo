@@ -12,7 +12,7 @@ public class ServerResponse {
     private String dst;
 
     @SerializedName("pts")
-    private List<List<Integer>> pts;
+    private List<List<Integer>> pts;  // Integer -> Float로 수정
 
     public String getSrc() {
         return src;
@@ -35,4 +35,3 @@ public class ServerResponse {
                 '}';
     }
 }
-

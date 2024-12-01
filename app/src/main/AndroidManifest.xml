@@ -33,11 +33,14 @@
         </intent-filter>
     </activity>
 
-    <activity android:name=".MainActivity" />
+    <activity android:name=".MainActivity"
+              android:launchMode="singleTask" />
+
     <activity android:name=".UploadActivity"
               android:launchMode="singleTask" />
 
-    <activity android:name=".ComparisonActivity" />
+    <activity android:name=".ComparisonActivity"
+              android:launchMode="singleTask" />
 
     <activity android:name=".QuestionListActivity"
               android:launchMode="singleTask" />
@@ -51,7 +54,11 @@
     <activity android:name=".NicknameActivity"
               android:launchMode="singleTask" />
 
-    <activity android:name=".AccountManagementActivity" />
+    <activity android:name=".AccountManagementActivity"
+              android:launchMode="singleTask"  />
+
+        <activity android:name=".ParticleEffect"
+            android:launchMode="singleTask" />
 
 
         <meta-data
