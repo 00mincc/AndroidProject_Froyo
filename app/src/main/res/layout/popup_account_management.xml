@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/popup_background"
+    android:paddingTop="50dp"
+    android:paddingBottom="30dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp">
+
+    <ImageButton
+        android:id="@+id/nickname_change_button"
+        android:layout_width="300dp"
+        android:layout_height="72dp"
+        android:scaleType="fitCenter"
+        android:background="@null"
+        android:src="@drawable/nickname_change_1"/>
+
+    <ImageButton
+        android:id="@+id/logout_button"
+        android:layout_width="300dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="22dp"
+        android:scaleType="fitCenter"
+        android:background="@null"
+        android:src="@drawable/logout_confirm_1"/>
+
+    <ImageButton
+        android:id="@+id/account_delete_button"
+        android:layout_width="300dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="22dp"
+        android:scaleType="fitCenter"
+        android:background="@null"
+        android:src="@drawable/delete_confirm_1"/>
+</LinearLayout> 

@@ -1,5 +1,7 @@
 package com.example.froyo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -22,13 +24,17 @@ public class RetrofitClient {
                     .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)   // 쓰기 타임아웃
                     .build();
 
+            // 커스텀 Gson 설정
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapterFactory(new LenientTypeAdapterFactory()) // 유연한 타입 어댑터 팩토리 등록
+                    .create();
+
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(client)
                     .build();
         }
         return retrofit;
     }
 }
-
