@@ -1,16 +1,19 @@
 package com.example.froyo;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +29,7 @@ public class ComparisonActivity extends AppCompatActivity {
     private Bitmap serverBitmap; // 변환 이미지
     private ImageView serverImageView; // 변환 이미지뷰
     private Bitmap mutableBitmap; // 수정 가능한 비트맵
+    private ProgressBar progressBar; // 타이머 진행을 위한 프로그레스 바
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,7 @@ public class ComparisonActivity extends AppCompatActivity {
         ImageView userImageView = findViewById(R.id.userImageView);
         serverImageView = findViewById(R.id.serverImageView);
         Button checkAnswersButton = findViewById(R.id.checkAnswersButton);
+        progressBar = findViewById(R.id.timerProgressBar);
 
         // AppData에서 데이터 가져오기
         AppData appData = (AppData) getApplication();
@@ -65,6 +70,35 @@ public class ComparisonActivity extends AppCompatActivity {
 
         // 정답 확인 버튼 이벤트
         checkAnswersButton.setOnClickListener(v -> drawAllAnswers());
+
+        // 2분 타이머 시작
+        startTimer();
+    }
+
+    /**
+     * 2분 타이머 시작 (프로그레스 바 사용)
+     */
+    private void startTimer() {
+        int timerDuration = 2 * 40 * 1000; // 2분 (밀리초 단위)
+        progressBar.setMax(timerDuration);
+
+        CountDownTimer countDownTimer = new CountDownTimer(timerDuration, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                progressBar.setProgress((int) millisUntilFinished);
+
+                // 시간이 20초 남았을 때 프로그레스 바 색상 변경
+                if (millisUntilFinished <= 20000) {
+                    progressBar.setProgressTintList(getResources().getColorStateList(android.R.color.holo_red_light));
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                Toast.makeText(ComparisonActivity.this, "타임아웃! 시간이 종료되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+        };
+        countDownTimer.start();
     }
 
     /**
@@ -89,6 +123,17 @@ public class ComparisonActivity extends AppCompatActivity {
 
         // 변경된 이미지를 ImageView에 다시 설정
         serverImageView.setImageBitmap(mutableBitmap);
+
+        // 정답 맞춘 횟수 증가
+        correctAnswers++;
+
+        // 정답 5개 맞췄을 경우 ParticleEffect 클래스로 이동
+        if (correctAnswers >= 5) {
+            new android.os.Handler().postDelayed(() -> {
+                Intent intent = new Intent(ComparisonActivity.this, ParticleEffect.class);
+                startActivity(intent);
+            }, 2000);
+        }
     }
 
     /**

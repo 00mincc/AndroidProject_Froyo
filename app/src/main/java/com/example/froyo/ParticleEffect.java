@@ -114,7 +114,7 @@ public class ParticleEffect extends AppCompatActivity {
 
     // 파티클의 위치를 계속 업데이트
     private void updateParticles() {
-        canvas.drawColor(Color.BLACK);  // 화면을 검은색으로 초기화
+        canvas.drawColor(Color.WHITE);  // 화면을 검은색으로 초기화
 
         // 각 파티클을 그리기
         for (int i = 0; i < numParticles; i++) {

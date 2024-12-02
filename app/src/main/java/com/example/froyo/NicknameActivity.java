@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,7 @@ public class NicknameActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
 
         EditText nicknameInput = findViewById(R.id.nickname_input);
-        Button saveButton = findViewById(R.id.save_button);
+        ImageButton saveButton = findViewById(R.id.save_button);
 
         // 저장 버튼 클릭 이벤트
         saveButton.setOnClickListener(v -> {

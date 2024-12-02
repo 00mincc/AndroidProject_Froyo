@@ -15,37 +15,51 @@ import java.util.List;
 public class LenientTypeAdapterFactory implements TypeAdapterFactory {
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-        // List<Integer> 타입에 대해서만 어댑터를 제공
-        if (!List.class.isAssignableFrom(type.getRawType()) || !type.getType().toString().contains("Integer")) {
+        // List<List<Integer>> 타입에 대해서만 어댑터를 제공
+        if (!List.class.isAssignableFrom(type.getRawType()) || !type.getType().toString().contains("List<List<Integer>>")) {
             return null;
         }
 
         // TypeAdapter 생성
-        return (TypeAdapter<T>) new TypeAdapter<List<Integer>>() {
+        return (TypeAdapter<T>) new TypeAdapter<List<List<Integer>>>() {
             @Override
-            public void write(JsonWriter out, List<Integer> value) throws IOException {
+            public void write(JsonWriter out, List<List<Integer>> value) throws IOException {
                 if (value == null) {
                     out.nullValue();
                     return;
                 }
                 out.beginArray();
-                for (Integer val : value) {
-                    out.value(val);
+                for (List<Integer> innerList : value) {
+                    out.beginArray();
+                    for (Integer val : innerList) {
+                        out.value(val);
+                    }
+                    out.endArray();
                 }
                 out.endArray();
             }
 
             @Override
-            public List<Integer> read(JsonReader in) throws IOException {
-                List<Integer> list = new ArrayList<>();
+            public List<List<Integer>> read(JsonReader in) throws IOException {
+                List<List<Integer>> list = new ArrayList<>();
                 if (in.peek() == JsonToken.BEGIN_ARRAY) {
                     in.beginArray();
                     while (in.hasNext()) {
-                        list.add(in.nextInt());
+                        List<Integer> innerList = new ArrayList<>();
+                        if (in.peek() == JsonToken.BEGIN_ARRAY) {
+                            in.beginArray();
+                            while (in.hasNext()) {
+                                if (in.peek() == JsonToken.NUMBER) {
+                                    innerList.add(in.nextInt());
+                                } else {
+                                    in.skipValue(); // 예상하지 못한 값이 있을 경우 건너뜀
+                                }
+                            }
+                            in.endArray();
+                        }
+                        list.add(innerList);
                     }
                     in.endArray();
-                } else if (in.peek() == JsonToken.NUMBER) {
-                    list.add(in.nextInt());
                 } else {
                     in.skipValue();
                 }

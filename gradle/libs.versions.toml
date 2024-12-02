@@ -9,6 +9,8 @@ activity = "1.9.2"
 constraintlayout = "2.1.4"
 glide = "4.11.0"
 photoview = "2.3.0"
+firebaseCrashlytics = "19.2.1"
+googleFirebaseCrashlytics = "3.0.2"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -22,7 +24,9 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glideCompiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 photoview = { module = "io.github.chrisbanes:photoview", version.ref = "photoview" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }
 

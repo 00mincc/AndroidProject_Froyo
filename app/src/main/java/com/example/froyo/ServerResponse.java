@@ -3,8 +3,6 @@ package com.example.froyo;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-
-
 public class ServerResponse {
 
     @SerializedName("src")
@@ -14,7 +12,7 @@ public class ServerResponse {
     private String dst;
 
     @SerializedName("pts")
-    private List<List<Integer>> pts;  // Integer -> Float로 수정
+    private List<List<Integer>> pts;
 
     public String getSrc() {
         return src;
