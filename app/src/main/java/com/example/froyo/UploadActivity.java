@@ -69,7 +69,7 @@ public class UploadActivity extends AppCompatActivity {
 
         userImageView = findViewById(R.id.userImageView);
         uploadButton = findViewById(R.id.uploadButton);
-        ImageButton deleteButton = findViewById(R.id.deleteButton);
+        ImageButton deleteButton = findViewById(R.id.selectButton);
         loadingOverlay = findViewById(R.id.loading_overlay);
 
         matrix = new Matrix();

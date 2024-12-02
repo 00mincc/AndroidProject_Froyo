@@ -1,11 +1,13 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
     android:gravity="center"
     android:background="@color/white">
+
+    <!-- 로고 이미지 -->
 
     <!-- 카드 스타일의 컨테이너 -->
     <LinearLayout
@@ -20,27 +22,32 @@
         <!-- 닉네임 입력 필드 -->
         <EditText
             android:id="@+id/nickname_input"
-            android:layout_width="match_parent"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:hint="닉네임을 입력하세요"
-            android:inputType="text"
-            android:background="@null"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:drawablePadding="8dp"
-            android:elevation="4dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginTop="10dp"
+            android:hint="새로운 닉네임을 입력하세요"
+            android:textSize="16sp"/>
 
-        <!-- 저장 버튼 -->
-        <ImageButton
-            android:id="@+id/save_button"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:background="@null"
+        <!-- 버튼 영역 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_gravity="center"
-            android:src="@drawable/setting_nickname"
-            android:layout_marginEnd="15dp"/>
+            android:layout_marginTop="10dp">
+
+            <!-- 저장 버튼 -->
+            <ImageButton
+                android:id="@+id/save_button"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:background="@null"
+                android:src="@drawable/setting_nickname"
+                android:layout_marginEnd="15dp"/>
+
+            <!-- 취소 버튼 -->
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

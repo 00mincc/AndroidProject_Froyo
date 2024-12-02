@@ -8,9 +8,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,6 +20,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ComparisonActivity extends AppCompatActivity {
@@ -30,6 +38,9 @@ public class ComparisonActivity extends AppCompatActivity {
     private ImageView serverImageView; // 변환 이미지뷰
     private Bitmap mutableBitmap; // 수정 가능한 비트맵
     private ProgressBar progressBar; // 타이머 진행을 위한 프로그레스 바
+    private CountDownTimer countDownTimer; // 타이머 객체
+    private boolean isRestart = false; // 게임 재시작 여부 확인
+    private File currentSessionFolder; // 현재 세션 폴더
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,20 +60,38 @@ public class ComparisonActivity extends AppCompatActivity {
 
         Log.i(TAG, "pts 데이터 확인: " + ptsCoordinates);
 
-        // 이미지 표시
-        displayImage(userImageView, srcBase64, "원본");
+        // 현재 세션을 위한 폴더 생성
+        if (!isRestart) {
+            createSessionFolder();
+        }
+
+        // 원본 이미지 표시 및 저장
+        Bitmap srcBitmap = decodeBase64ToBitmap(srcBase64);
+        if (srcBitmap != null) {
+            userImageView.setImageBitmap(srcBitmap);
+            if (!isRestart && !isImageAlreadySaved("src.png")) {
+                saveImageToStorage(srcBitmap, "src.png");
+            }
+        } else {
+            Log.e(TAG, "원본 이미지를 디코딩할 수 없습니다.");
+        }
+
+        // 변환 이미지 표시 및 저장
         serverBitmap = decodeBase64ToBitmap(dstBase64);
         if (serverBitmap != null) {
             // 서버 이미지를 MutableBitmap으로 설정
             mutableBitmap = serverBitmap.copy(Bitmap.Config.ARGB_8888, true);
             serverImageView.setImageBitmap(mutableBitmap);
-
-            Log.i(TAG, "이미지 크기: " + serverBitmap.getWidth() + "px x " + serverBitmap.getHeight() + "px, " +
-                    "변환된 크기: " + serverBitmap.getWidth() / getResources().getDisplayMetrics().density + "dp x " +
-                    serverBitmap.getHeight() / getResources().getDisplayMetrics().density + "dp");
-
+            if (!isRestart && !isImageAlreadySaved("dst.png")) {
+                saveImageToStorage(serverBitmap, "dst.png");
+            }
         } else {
             Log.e(TAG, "변환 이미지를 디코딩할 수 없습니다.");
+        }
+
+        // 정답 좌표 저장
+        if (!isRestart && !isPtsAlreadySaved()) {
+            savePtsToStorage(ptsCoordinates);
         }
 
         // 터치 이벤트 추가
@@ -75,14 +104,59 @@ public class ComparisonActivity extends AppCompatActivity {
         startTimer();
     }
 
+    private void createSessionFolder() {
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (storageDir != null && !storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        currentSessionFolder = new File(storageDir, "session_" + timeStamp);
+        if (!currentSessionFolder.exists()) {
+            currentSessionFolder.mkdirs();
+        }
+    }
+
+    private boolean isImageAlreadySaved(String fileName) {
+        File imageFile = new File(currentSessionFolder, fileName);
+        return imageFile.exists();
+    }
+
+    private boolean isPtsAlreadySaved() {
+        File ptsFile = new File(currentSessionFolder, "pts.txt");
+        return ptsFile.exists();
+    }
+
+    private void saveImageToStorage(Bitmap bitmap, String fileName) {
+        File imageFile = new File(currentSessionFolder, fileName);
+        try (FileOutputStream out = new FileOutputStream(imageFile)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Log.i(TAG, "이미지 저장 성공: " + fileName);
+        } catch (IOException e) {
+            Log.e(TAG, "이미지 저장 실패", e);
+        }
+    }
+
+    private void savePtsToStorage(List<List<Integer>> ptsCoordinates) {
+        File ptsFile = new File(currentSessionFolder, "pts.txt");
+        try (FileOutputStream out = new FileOutputStream(ptsFile)) {
+            for (List<Integer> coordinates : ptsCoordinates) {
+                String line = coordinates.get(0) + "," + coordinates.get(1) + "\n";
+                out.write(line.getBytes());
+            }
+            Log.i(TAG, "정답 좌표 저장 성공: pts.txt");
+        } catch (IOException e) {
+            Log.e(TAG, "정답 좌표 저장 실패", e);
+        }
+    }
+
     /**
      * 2분 타이머 시작 (프로그레스 바 사용)
      */
     private void startTimer() {
-        int timerDuration = 2 * 40 * 1000; // 2분 (밀리초 단위)
+        int timerDuration = 2 * 60 * 1000; // 2분 (밀리초 단위)
         progressBar.setMax(timerDuration);
 
-        CountDownTimer countDownTimer = new CountDownTimer(timerDuration, 1000) {
+        countDownTimer = new CountDownTimer(timerDuration, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 progressBar.setProgress((int) millisUntilFinished);
@@ -127,8 +201,11 @@ public class ComparisonActivity extends AppCompatActivity {
         // 정답 맞춘 횟수 증가
         correctAnswers++;
 
-        // 정답 5개 맞췄을 경우 ParticleEffect 클래스로 이동
+        // 정답 5개 맞췄을 경우 ParticleEffect 클래스로 이동 및 타이머 종료
         if (correctAnswers >= 5) {
+            if (countDownTimer != null) {
+                countDownTimer.cancel(); // 타이머 종료
+            }
             new android.os.Handler().postDelayed(() -> {
                 Intent intent = new Intent(ComparisonActivity.this, ParticleEffect.class);
                 startActivity(intent);
@@ -179,9 +256,6 @@ public class ComparisonActivity extends AppCompatActivity {
         // Toast 메시지로 정답 표시 알림
         Toast.makeText(this, "정답이 표시되었습니다.", Toast.LENGTH_SHORT).show();
     }
-
-
-
 
     /**
      * 터치 이벤트 처리
@@ -243,8 +317,6 @@ public class ComparisonActivity extends AppCompatActivity {
         return imageCoordinates;
     }
 
-
-
     /**
      * 정답 체크 로직
      */
@@ -260,9 +332,6 @@ public class ComparisonActivity extends AppCompatActivity {
         }
         return false;
     }
-
-
-
 
     /**
      * 이미지를 Base64 문자열로부터 Bitmap으로 변환
