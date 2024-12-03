@@ -12,7 +12,6 @@ import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -21,7 +20,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -153,7 +151,7 @@ public class ComparisonActivity extends AppCompatActivity {
      * 2분 타이머 시작 (프로그레스 바 사용)
      */
     private void startTimer() {
-        int timerDuration = 2 * 60 * 1000; // 2분 (밀리초 단위)
+        int timerDuration = 2 * 40 * 1000; // 2분 (밀리초 단위)
         progressBar.setMax(timerDuration);
 
         countDownTimer = new CountDownTimer(timerDuration, 1000) {
@@ -170,10 +168,18 @@ public class ComparisonActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 Toast.makeText(ComparisonActivity.this, "타임아웃! 시간이 종료되었습니다.", Toast.LENGTH_SHORT).show();
+
+
+                new android.os.Handler().postDelayed(() -> {
+                    Intent intent = new Intent(ComparisonActivity.this, LooseParticle.class);
+                    startActivity(intent);
+                    finish();
+                }, 4000);
             }
         };
         countDownTimer.start();
     }
+
 
     /**
      * 이미지에 원을 그리기

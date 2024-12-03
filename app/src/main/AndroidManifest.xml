@@ -57,8 +57,11 @@
     <activity android:name=".AccountManagementActivity"
               android:launchMode="singleTask"  />
 
-        <activity android:name=".ParticleEffect"
-            android:launchMode="singleTask" />
+    <activity android:name=".ParticleEffect"
+              android:launchMode="singleTask" />
+
+    <activity android:name=".LooseParticle"
+              android:launchMode="singleTask" />
 
 
 

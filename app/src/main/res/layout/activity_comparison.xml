@@ -60,4 +60,11 @@
         android:scaleY="3"
         android:progressTint="@android:color/holo_blue_light"/>
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/timeoutImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
 </FrameLayout>
